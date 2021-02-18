@@ -4,6 +4,12 @@ import IconButton from '@material-ui/core/IconButton';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 
+// Use global variables instead of hard coded values to limit typo errors.
+const ACTIONS = {
+    INCREMENT: 'increment',
+    DECREMENT: 'decrement',
+}
+
 const useStyles = makeStyles((theme) => ({
     root: {
         '& > *': {
@@ -11,12 +17,6 @@ const useStyles = makeStyles((theme) => ({
         },
     },
 }));
-
-// Use global variables instead of hard coded values to limit typo errors.
-const ACTIONS = {
-    INCREMENT: 'increment',
-    DECREMENT: 'decrement',
-}
 
 // Uses useState hooks to track the value of the counter state with the 
 // dispatch call instead of callbacks. 

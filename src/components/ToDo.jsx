@@ -1,8 +1,13 @@
-import React, { useReducer } from 'react';
+import React, { useState, useReducer } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
+import TodoList from './TodoList';
+
+// Use global variables instead of hard coded values to limit typo errors.
+export const ACTIONS = {
+    ADD_TODO: 'add-todo',
+    TOGGLE_TODO: 'toggle-todo',
+    DELETE_TODO: 'delete-todo'
+}
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -12,31 +17,57 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-// Use global variables instead of hard coded values to limit typo errors.
-const ACTIONS = {
-
-}
-
-// Uses useState hooks to track the value of the counter state with the 
+// Uses useState hooks to track the todoList object's state with the 
 // dispatch call instead of callbacks. 
-function reducer (state, action) {
-
+function reducer (todos, action) {
+    switch (action.type) {
+        case ACTIONS.ADD_TODO:
+            return [...todos, newToDo(action.payload.name)]
+        case ACTIONS.TOGGLE_TODO:
+            return todos.map(todo => {
+                if (todo.id === action.payload.id) {
+                    return {...todo, complete: !todo.complete }
+                }
+                return todo
+            })
+            case ACTIONS.DELETE_TODO:
+                return todos.filter(todo => todo.id !== action.payload.id)
+        default:
+            return todos
+    }
 }
 
-// Functional Component: CounterV2
-// Reference React hook api for details: 
-// https://reactjs.org/docs/hooks-reference.html#usereducer
-function ToDo() {
-    const classes = useStyles();
-    // Specifying the intial useReducer state for count value.
+// Create Todo object with id, name, and boolean complete
+function newToDo(name) {
+    return { id: Date.now(), name: name, complete: false }
+}
+
+// Functional Component: Todo
+function Todo() {
+    // const classes = useStyles();
+    // Specifying the intial useReducer state for empty todo array.
     const initialState = [];
     const [todos, dispatch] = useReducer( reducer, initialState );
+    const [name, setName] = useState('');
+
+    function handleSubmit(e) {
+        // prevent page refresh
+        // e.preventDefault();
+        dispatch({ type: ACTIONS.ADD_TODO, payload: { name: name } });
+        setName('');
+    }
 
     return (
-       <div className={classes.root}>
+       <>
+           <form onSubmit={handleSubmit}>
+               <input type="text" value={name} onChange={e => setName(e.target.value)} />
+           </form>
+           {todos.map(todo => {
+               return <TodoList key={todo.id} todo={todo} dispatch={dispatch}/>
+           })}
 
-        </div>
+        </>
     )
 }
 
-export default ToDo
+export default Todo
